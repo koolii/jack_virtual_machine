@@ -4,7 +4,11 @@
   "description": "this makes .hack file(binary) for Jack language",
   "main": "./index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "tslint --format stylish 'src/**/*.ts'",
+    "compile": "tsc",
+    "build": "yarn lint && yarn compile",
+    "push": "git push origin master"
   },
   "repository": {
     "type": "git",
