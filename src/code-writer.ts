@@ -1,6 +1,7 @@
 import Logger from './logger'
+import { ICodeWriter } from './interface'
 
-export default class CodeWriter {
+export default class CodeWriter implements ICodeWriter {
   logger: Logger
 
   constructor() {

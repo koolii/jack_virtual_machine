@@ -9,10 +9,10 @@ export interface IParser {
   // 現コマンドの最初の引数が返される
   // 算術コマンドの場合コマンド自体が帰る
   // C_RETURNの場合は、本ルーチンは呼ばない
-  arg1():void
+  arg1(row: string):void
   // 現コマンドの２番めのひきすうがかえされる
   // C_PUSH/C_POP/C_FUNCTION/C_CALLの場合のみ本ルーチンを呼ぶようにする
-  arg2():void
+  arg2(row: string):number
 }
 
 export interface ICodeWriter {
