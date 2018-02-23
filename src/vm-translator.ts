@@ -8,13 +8,18 @@ export default class VMTranslator {
   writer: CodeWriter
 
   constructor() {
+    const path = process.argv.slice(2)[0]
+
     this.logger = new Logger(VMTranslator)
-    this.parser = new Parser()
+    this.parser = new Parser(path)
     this.writer = new CodeWriter()
     this.logger.constructor('construct')
   }
 
+  async exec() {
+    await this.parser.load()
+  }
+
   setup() {}
-  exec() {}
   after() {}
 }

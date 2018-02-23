@@ -25,3 +25,9 @@ export interface ICodeWriter {
   // 出力ファイルを閉じる
   close():void
 }
+
+// 読み込んだファイルのパスとその内容(line)を保持するための型
+export interface IM_FILE {
+  path: string
+  line: string[]
+}
