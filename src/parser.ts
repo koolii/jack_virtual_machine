@@ -30,13 +30,16 @@ export default class Parser implements IParser {
       return Promise.reject(`can't find file pathes anywhere.`)
     }
 
-    const load = pathes.map(path => this.loadFile(path))
-    const fileDetails = await Promise.all(load)
+    const files = []
+    for (const path of pathes) {
+      const fileContents: IM_FILE = await this.loadFile(path)
+      files.push(fileContents)
+    }
 
-    this.logger.load(JSON.stringify(fileDetails, null, '  '))
-    this.files = fileDetails
+    this.logger.load(JSON.stringify(files, null, '  '))
+    this.files = files
 
-    return fileDetails
+    return files
   }
 
   private loadFile(path: string): Promise<IM_FILE> {
@@ -47,7 +50,7 @@ export default class Parser implements IParser {
 
       readLine
         .on('close', () => { resolve({ path, line }) })
-        .on('line', (l) => {
+        .on('line', (l: string) => {
           // remove empty letter and comment part
           // 空白文字を削除しては行けない（この場所では）
           // 複数スペースを削除する
