@@ -17,7 +17,7 @@ export interface IParser {
 
 export interface ICodeWriter {
   // Vmファイルの変換が開始したことを知らせる
-  setFileName():void
+  setFileName(filepath: string):void
   // 算術コマンドをアセンブリコードに変換し、書き込む
   writeArithmetic():void
   // C_PUSHまたはC_POPコマンドをアセンブリコードに変換し、書き込む

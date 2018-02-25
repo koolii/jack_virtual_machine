@@ -21,14 +21,17 @@ export default class VMTranslator {
     const pathes = await this.parser.load()
     this.logger.exec('all pathes are ' + pathes.join(','))
 
-    pathes.forEach(path => this.parseFile(path))
+    for (const path of pathes) {
+      await this.parseFile(path)
+    }
   }
 
   setup() {}
   after() {}
 
-  private parseFile(path: string) {
+  private async parseFile(path: string) {
     const read = this.parser.getReaderByFs(path)
+    await this.writer.setFileName(path)
 
     while (true) {
       const line = read()
@@ -36,7 +39,9 @@ export default class VMTranslator {
         break
       }
       if (this.parser.hasMoreCommands(line)) {
-        this.logger.exec(JSON.stringify(this.parser.advance(line)))
+        const parsed = this.parser.advance(line)
+        // this.logger.exec(JSON.stringify(parsed))
+        this.writer.write(JSON.stringify(parsed))
       }
     }
   }
