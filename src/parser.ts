@@ -88,7 +88,7 @@ export default class Parser implements IParser {
     return res
   }
 
-  private arg1(type: string, operator: string[]): string {
+  arg1(type: string, operator: string[]): string {
     let result
     switch (type) {
       case CMD.C_RETURN:
@@ -107,7 +107,7 @@ export default class Parser implements IParser {
   }
 
   // todo ここは只の一行の文字列だとコマンドをはんて出来ないのでModelを作成して渡す
-  private arg2(type: string, operator: string[]): number {
+  arg2(type: string, operator: string[]): number {
     if ([CMD.C_PUSH, CMD.C_POP, CMD.C_FUNCTION, CMD.C_CALL].includes(type)) {
       if (!operator[2]) {
         throw new Error('arg2 doesnot have a second argument.')
@@ -117,7 +117,7 @@ export default class Parser implements IParser {
     return null
   }
 
-  private commandType(operator: string): string {
+  commandType(operator: string): string {
     switch (operator) {
       case 'push':
         return CMD.C_PUSH
