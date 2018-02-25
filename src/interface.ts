@@ -1,6 +1,6 @@
 export interface IParser {
   // さらにコマンドが存在するかチェック
-  hasMoreCommands():void
+  hasMoreCommands(line: string):boolean
   // 次のコマンドを読み込み、それを現コマンドとする
   // ここの結果がtrueの場合のみ、本ルーチンを呼ぶようにする
   advance(line: string):I_CMD

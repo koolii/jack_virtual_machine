@@ -72,7 +72,11 @@ export default class Parser implements IParser {
     })
   }
 
-  hasMoreCommands() {}
+  hasMoreCommands(line: string): boolean {
+    // temporary
+    // it can't recognize error pattern
+    return line.match(/push|pop|label|goto|if|function|return|call/g) !== null
+  }
 
   advance(line: string): I_CMD {
     const opes = line.split(' ')
@@ -119,6 +123,7 @@ export default class Parser implements IParser {
     }
     return null
   }
+
 
   commandType(operator: string): string {
     switch (operator) {
