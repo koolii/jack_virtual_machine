@@ -36,5 +36,5 @@ export interface I_CMD {
   line: string
   type: string
   arg1: string|null
-  arg2: string|null
+  arg2: number|null
 }

@@ -24,7 +24,7 @@ export default class Parser implements IParser {
     this.logger.constructor('construct')
   }
 
-  async load(): Promise<IM_FILE[]> {
+  async load(): Promise<string[]> {
     const pathes = glob.sync(`${this.inputPath}/**/*.vm`)
     if (pathes.length === 0) {
       return Promise.reject(`can't find file pathes anywhere.`)
@@ -39,7 +39,7 @@ export default class Parser implements IParser {
     this.logger.load(JSON.stringify(files, null, '  '))
     this.files = files
 
-    return files
+    return files.map(entry => entry.path)
   }
 
   private loadFile(path: string): Promise<IM_FILE> {
@@ -49,7 +49,10 @@ export default class Parser implements IParser {
       const readLine: ReadLine = createInterface({ input: stream })
 
       readLine
-        .on('close', () => { resolve({ path, line }) })
+        .on('close', () => {
+          line.push(constants.EOF)
+          resolve({ path, line })
+        })
         .on('line', (l: string) => {
           // remove empty letter and comment part
           // 空白文字を削除しては行けない（この場所では）
@@ -83,7 +86,7 @@ export default class Parser implements IParser {
       line,
       type,
       arg1: this.arg1(type, opes),
-      arg2: this.arg1(type, opes),
+      arg2: this.arg2(type, opes),
     }
     return res
   }
@@ -138,5 +141,21 @@ export default class Parser implements IParser {
       default:
         return CMD.C_ARITHMETIC
     }
+  }
+
+  getReaderByFs(path: string): Function {
+    const file = this.files.filter(entry => entry.path === path)
+    if (file.length !== 1) {
+      throw new Error('confirm your designated file path.')
+    }
+
+    const lines = file[0].line.slice(0);
+    function* generate() {
+      while (lines.length !== 0) {
+        yield lines.shift()
+      }
+    }
+    const iterator = generate()
+    return () => iterator.next().value
   }
 }
