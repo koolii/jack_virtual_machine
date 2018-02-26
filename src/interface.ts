@@ -19,9 +19,9 @@ export interface ICodeWriter {
   // Vmファイルの変換が開始したことを知らせる
   setFileName(filepath: string):void
   // 算術コマンドをアセンブリコードに変換し、書き込む
-  writeArithmetic():void
+  writeArithmetic(parsed: I_CMD):void
   // C_PUSHまたはC_POPコマンドをアセンブリコードに変換し、書き込む
-  writePushPop():void
+  writePushPop(parsed: I_CMD):void
   // 出力ファイルを閉じる
   close():void
 }

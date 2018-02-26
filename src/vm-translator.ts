@@ -40,8 +40,18 @@ export default class VMTranslator {
       }
       if (this.parser.hasMoreCommands(line)) {
         const parsed = this.parser.advance(line)
-        // this.logger.exec(JSON.stringify(parsed))
-        this.writer.write(JSON.stringify(parsed))
+
+        switch (parsed.type) {
+          case constants.COMMAND.C_ARITHMETIC:
+            await this.writer.writeArithmetic(parsed)
+            break
+          case constants.COMMAND.C_POP:
+          case constants.COMMAND.C_PUSH:
+            await this.writer.writePushPop(parsed)
+            break
+          default:
+            break
+        }
       }
     }
   }

@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra'
 import Logger from './logger'
 import constants from './constants'
-import { ICodeWriter } from './interface'
+import { ICodeWriter, I_CMD } from './interface'
 
 export default class CodeWriter implements ICodeWriter {
   logger: Logger
@@ -17,8 +17,12 @@ export default class CodeWriter implements ICodeWriter {
     await this.init()
   }
 
-  writeArithmetic() {}
-  writePushPop() {}
+  writeArithmetic(parsed: I_CMD) {
+    this.write(JSON.stringify(parsed))
+  }
+  writePushPop(parsed: I_CMD) {
+    this.write(JSON.stringify(parsed))
+  }
 
   close() {
     this.filepath = ''
@@ -35,7 +39,7 @@ export default class CodeWriter implements ICodeWriter {
   }
 
   // temporary
-  write(line: string): Promise<void> {
+  private write(line: string): Promise<void> {
     return fs.appendFile(this.filepath, `${line}\n`, { encoding: 'utf-8' })
   }
 }
