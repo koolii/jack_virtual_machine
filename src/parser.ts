@@ -24,19 +24,22 @@ export default class Parser implements IParser {
     this.logger.constructor('construct')
   }
 
-  async load(): Promise<IM_FILE[]> {
+  async load(): Promise<string[]> {
     const pathes = glob.sync(`${this.inputPath}/**/*.vm`)
     if (pathes.length === 0) {
       return Promise.reject(`can't find file pathes anywhere.`)
     }
 
-    const load = pathes.map(path => this.loadFile(path))
-    const fileDetails = await Promise.all(load)
+    const files = []
+    for (const path of pathes) {
+      const fileContents: IM_FILE = await this.loadFile(path)
+      files.push(fileContents)
+    }
 
-    this.logger.load(JSON.stringify(fileDetails, null, '  '))
-    this.files = fileDetails
+    this.logger.load(JSON.stringify(files, null, '  '))
+    this.files = files
 
-    return fileDetails
+    return files.map(entry => entry.path)
   }
 
   private loadFile(path: string): Promise<IM_FILE> {
@@ -46,8 +49,11 @@ export default class Parser implements IParser {
       const readLine: ReadLine = createInterface({ input: stream })
 
       readLine
-        .on('close', () => { resolve({ path, line }) })
-        .on('line', (l) => {
+        .on('close', () => {
+          line.push(constants.EOF)
+          resolve({ path, line })
+        })
+        .on('line', (l: string) => {
           // remove empty letter and comment part
           // 空白文字を削除しては行けない（この場所では）
           // 複数スペースを削除する
@@ -66,7 +72,11 @@ export default class Parser implements IParser {
     })
   }
 
-  hasMoreCommands() {}
+  hasMoreCommands(line: string): boolean {
+    // temporary
+    // it can't recognize error pattern
+    return line.match(/push|pop|label|goto|if|function|return|call/g) !== null
+  }
 
   advance(line: string): I_CMD {
     const opes = line.split(' ')
@@ -75,22 +85,45 @@ export default class Parser implements IParser {
       throw new Error('line has no charactors. It it funny.')
     }
 
+    const type = this.commandType(opes[0])
     const res = {
       line,
-      type: this.commandType(opes[0]),
-      arg1: '', // なぜnullを渡すとエラーになる？interface側にもnullは許可しているのに
-      arg2: '',
+      type,
+      arg1: this.arg1(type, opes),
+      arg2: this.arg2(type, opes),
     }
-
-    if (opes[1]) {
-      res.arg1 = this.arg1(opes[1])
-    }
-    if (opes[2]) {
-      res.arg2 = this.arg1(opes[2])
-    }
-
     return res
   }
+
+  arg1(type: string, operator: string[]): string {
+    let result
+    switch (type) {
+      case CMD.C_RETURN:
+        result = null
+        break
+      case CMD.C_ARITHMETIC:
+        result = operator[0]
+        break
+      default:
+        if (!operator[1]) {
+          throw new Error('arg1 does not have any arguments.')
+        }
+        result = operator[1]
+    }
+    return result
+  }
+
+  // todo ここは只の一行の文字列だとコマンドをはんて出来ないのでModelを作成して渡す
+  arg2(type: string, operator: string[]): number {
+    if ([CMD.C_PUSH, CMD.C_POP, CMD.C_FUNCTION, CMD.C_CALL].includes(type)) {
+      if (!operator[2]) {
+        throw new Error('arg2 doesnot have a second argument.')
+      }
+      return Number(operator[2])
+    }
+    return null
+  }
+
 
   commandType(operator: string): string {
     switch (operator) {
@@ -115,12 +148,19 @@ export default class Parser implements IParser {
     }
   }
 
-  arg1(operator: string): string {
-    return ''
-  }
+  getReaderByFs(path: string): Function {
+    const file = this.files.filter(entry => entry.path === path)
+    if (file.length !== 1) {
+      throw new Error('confirm your designated file path.')
+    }
 
-  // todo ここは只の一行の文字列だとコマンドをはんて出来ないのでModelを作成して渡す
-  arg2(operator: string): number {
-    return 0
+    const lines = file[0].line.slice(0);
+    function* generate() {
+      while (lines.length !== 0) {
+        yield lines.shift()
+      }
+    }
+    const iterator = generate()
+    return () => iterator.next().value
   }
 }

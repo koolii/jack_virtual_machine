@@ -1,6 +1,6 @@
 export interface IParser {
   // さらにコマンドが存在するかチェック
-  hasMoreCommands():void
+  hasMoreCommands(line: string):boolean
   // 次のコマンドを読み込み、それを現コマンドとする
   // ここの結果がtrueの場合のみ、本ルーチンを呼ぶようにする
   advance(line: string):I_CMD
@@ -9,15 +9,15 @@ export interface IParser {
   // 現コマンドの最初の引数が返される
   // 算術コマンドの場合コマンド自体が帰る
   // C_RETURNの場合は、本ルーチンは呼ばない
-  arg1(operator: string):string
+  arg1(type: string, operator: string[]):string
   // 現コマンドの２番めのひきすうがかえされる
   // C_PUSH/C_POP/C_FUNCTION/C_CALLの場合のみ本ルーチンを呼ぶようにする
-  arg2(operator: string):number
+  arg2(type: string, operator: string[]):number
 }
 
 export interface ICodeWriter {
   // Vmファイルの変換が開始したことを知らせる
-  setFileName():void
+  setFileName(filepath: string):void
   // 算術コマンドをアセンブリコードに変換し、書き込む
   writeArithmetic():void
   // C_PUSHまたはC_POPコマンドをアセンブリコードに変換し、書き込む
@@ -36,5 +36,5 @@ export interface I_CMD {
   line: string
   type: string
   arg1: string|null
-  arg2: string|null
+  arg2: number|null
 }

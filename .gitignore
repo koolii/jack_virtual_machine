@@ -2,3 +2,4 @@ node_modules/
 dist/
 *.hack
 yarn-error.log
+test/**/*.asm
