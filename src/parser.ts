@@ -75,7 +75,7 @@ export default class Parser implements IParser {
   hasMoreCommands(line: string): boolean {
     // temporary
     // it can't recognize error pattern
-    return line.match(/push|pop|label|goto|if|function|return|call/g) !== null
+    return line.match(/push|pop|label|goto|if|function|return|call|not|or|neg|add|sub|gt|lt|eq/g) !== null
   }
 
   advance(line: string): I_CMD {
