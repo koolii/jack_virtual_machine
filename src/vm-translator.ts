@@ -26,9 +26,6 @@ export default class VMTranslator {
     }
   }
 
-  setup() {}
-  after() {}
-
   private async parseFile(path: string) {
     const read = this.parser.getReaderByFs(path)
     await this.writer.setFileName(path)
@@ -54,5 +51,7 @@ export default class VMTranslator {
         }
       }
     }
+
+    this.writer.printMemory()
   }
 }
