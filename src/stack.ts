@@ -29,11 +29,6 @@ export default class Stack {
     this.logger.push(`pushed ${value}, sp is ${this.sp}`)
   }
 
-  isAccessIndex(index: number) {
-    this.logger.isAccessIndex(`sp is ${this.sp}, index is ${index}`)
-    return this.sp > index
-  }
-
   // オペランドの場合はstringで、それ以外の数値はnumberで返す
   pop(): number|string {
     const value: string = this.list[this.sp]

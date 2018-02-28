@@ -17,7 +17,7 @@ export default Object.freeze({
     C_RETURN: 'C_RETURN',
     C_CALL: 'C_CALL',
   },
-  INTERVAL_STACK_LENGTH: 1000,
+  INTERVAL_STACK_LENGTH: 50,
   SYMBOL: {
     SP: 0,
     LCL: 1,
